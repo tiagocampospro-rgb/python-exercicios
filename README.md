@@ -3,6 +3,9 @@
 Repositório de estudos em Python.
 
 ## Estrutura
-- **aulas**: exemplos vistos em aula
-- **desafios**: exercícios práticos
-- **testes**: experimentos e testes diversos
+- `aulas/` → conteúdos vistos em aula
+- `desafios/` → exercícios propostos
+- `testes/` → testes e experimentos
+
+## Objetivo
+Praticar lógica de programação, fundamentos de Python e organização de projetos.
