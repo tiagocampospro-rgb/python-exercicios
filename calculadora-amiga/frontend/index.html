@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Calculadora Amiga</title>
+
+    <style>
+      :root{
+        --bg: #0b1220;
+        --card: rgba(255,255,255,.06);
+        --card2: rgba(255,255,255,.08);
+        --border: rgba(255,255,255,.10);
+        --text: rgba(255,255,255,.92);
+        --muted: rgba(255,255,255,.70);
+        --muted2: rgba(255,255,255,.55);
+        --accent: #7c5cff;
+        --accent2: #22c55e;
+        --danger: #ff4d6d;
+        --shadow: 0 18px 60px rgba(0,0,0,.55);
+        --radius: 18px;
+      }
+
+      * { box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        color: var(--text);
+        background:
+          radial-gradient(900px 520px at 20% 10%, rgba(124,92,255,.35), transparent 55%),
+          radial-gradient(900px 520px at 80% 0%, rgba(34,197,94,.22), transparent 55%),
+          radial-gradient(900px 520px at 50% 100%, rgba(255,77,109,.18), transparent 55%),
+          var(--bg);
+        min-height: 100vh;
+      }
+
+      a{ color: inherit; }
+      .container{
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 18px 48px;
+      }
+
+      .topbar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+
+      .brand{
+        display:flex;
+        align-items:center;
+        gap: 12px;
+      }
+
+      .logo{
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background:
+          radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%),
+          linear-gradient(135deg, rgba(124,92,255,1), rgba(34,197,94,1));
+        box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      }
+
+      h1{
+        font-size: 20px;
+        margin: 0;
+        letter-spacing: .2px;
+      }
+
+      .subtitle{
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .controls{
+        display:flex;
+        gap: 10px;
+        align-items:center;
+        flex-wrap: wrap;
+      }
+
+      .search{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 10px 14px;
+        min-width: min(520px, 92vw);
+        box-shadow: 0 10px 40px rgba(0,0,0,.25);
+      }
+
+      .search input{
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font-size: 14px;
+      }
+      .search input::placeholder{ color: var(--muted2); }
+
+      .btn{
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      }
+      .btn:hover{
+        background: var(--card2);
+        border-color: rgba(255,255,255,.18);
+      }
+      .btn:active{ transform: scale(.98); }
+
+      .btn-primary{
+        background: linear-gradient(135deg, rgba(124,92,255,1), rgba(34,197,94,1));
+        border: none;
+        box-shadow: 0 14px 40px rgba(124,92,255,.25);
+      }
+      .btn-primary:hover{
+        filter: brightness(1.05);
+      }
+
+      .statusline{
+        margin: 12px 2px 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid{
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .card{
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        box-shadow: 0 12px 40px rgba(0,0,0,.24);
+        transition: transform .12s ease, border-color .2s ease, background .2s ease;
+      }
+      .card:hover{
+        transform: translateY(-2px);
+        background: var(--card2);
+        border-color: rgba(255,255,255,.18);
+      }
+
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        border: 1px solid var(--border);
+        padding: 6px 10px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+      }
+
+      .card h3{
+        margin: 0 0 6px 0;
+        font-size: 16px;
+      }
+      .card p{
+        margin: 0 0 12px 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .card .row{
+        display:flex;
+        gap: 10px;
+        align-items:center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
+      .small{
+        color: var(--muted2);
+        font-size: 12px;
+      }
+
+      /* Painel */
+      .overlay{
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.55);
+        backdrop-filter: blur(8px);
+        display:none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 50;
+      }
+      .overlay.show{ display:flex; }
+
+      .panel{
+        width: min(760px, 96vw);
+        background: rgba(10,16,30,.92);
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transform: translateY(8px);
+        opacity: .98;
+        animation: pop .16s ease-out forwards;
+      }
+      @keyframes pop{
+        to { transform: translateY(0); opacity: 1; }
+      }
+
+      .panel-head{
+        padding: 16px 16px 12px;
+        display:flex;
+        gap: 12px;
+        align-items:flex-start;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255,255,255,.10);
+        background:
+          radial-gradient(500px 260px at 20% 0%, rgba(124,92,255,.24), transparent 60%),
+          radial-gradient(500px 260px at 80% 0%, rgba(34,197,94,.18), transparent 60%);
+      }
+      .panel-head h2{
+        margin: 0;
+        font-size: 18px;
+      }
+      .panel-head p{
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .panel-body{
+        padding: 16px;
+      }
+
+      .form{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 640px){
+        .form{ grid-template-columns: 1fr; }
+      }
+
+      label{
+        display:block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      input[type="number"]{
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,.14);
+        background: rgba(255,255,255,.06);
+        outline: none;
+        color: var(--text);
+      }
+      input[type="number"]:focus{
+        border-color: rgba(124,92,255,.55);
+        box-shadow: 0 0 0 3px rgba(124,92,255,.18);
+      }
+
+      .panel-actions{
+        margin-top: 14px;
+        display:flex;
+        gap: 10px;
+        justify-content:flex-end;
+        flex-wrap: wrap;
+      }
+
+      .result{
+        margin-top: 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.06);
+        padding: 14px;
+      }
+      .result-title{
+        font-size: 12px;
+        color: var(--muted2);
+        margin-bottom: 10px;
+      }
+
+      .big-number{
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: .2px;
+        margin: 0;
+      }
+
+      .json{
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(0,0,0,.24);
+        color: rgba(255,255,255,.88);
+        overflow:auto;
+        font-size: 12px;
+      }
+
+      .error{
+        color: var(--danger);
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .tag{
+        font-size: 12px;
+        color: rgba(255,255,255,.78);
+        border: 1px solid rgba(255,255,255,.14);
+        padding: 6px 10px;
+        border-radius: 999px;
+      }
+
+      .kbd{
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+        color: rgba(255,255,255,.72);
+        border: 1px solid rgba(255,255,255,.16);
+        padding: 4px 8px;
+        border-radius: 10px;
+        background: rgba(255,255,255,.06);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <h1>Calculadora Amiga</h1>
+            <p class="subtitle">Escolha uma calculadora do catálogo e resolva contas do dia a dia.</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="search">
+            <span class="kbd">Ctrl</span><span class="kbd">K</span>
+            <input id="search" type="text" placeholder="Pesquisar (ex: soma, tinta, salário)..." />
+          </div>
+          <button id="refresh" class="btn">Atualizar</button>
+        </div>
+      </div>
+
+      <div id="status" class="statusline"></div>
+
+      <div id="cards" class="grid"></div>
+
+      <!-- Modal -->
+      <div id="overlay" class="overlay">
+        <div class="panel" role="dialog" aria-modal="true">
+          <div class="panel-head">
+            <div>
+              <h2 id="panelTitle"></h2>
+              <p id="panelDesc"></p>
+              <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <span id="panelTag" class="tag"></span>
+                <span class="tag">API: <span id="panelEndpoint" style="opacity:.85"></span></span>
+              </div>
+            </div>
+            <button id="btnFecharX" class="btn" title="Fechar (ESC)">✕</button>
+          </div>
+
+          <div class="panel-body">
+            <form id="calcForm" class="form"></form>
+
+            <div class="panel-actions">
+              <button id="btnFechar" class="btn" type="button">Fechar</button>
+              <button id="btnCalcular" class="btn btn-primary" type="button">Calcular</button>
+            </div>
+
+            <div id="resultBox" class="result" style="display:none;">
+              <div class="result-title">Resultado</div>
+              <p id="err" class="error" style="display:none;"></p>
+              <p id="bigResult" class="big-number" style="display:none;"></p>
+              <pre id="jsonResult" class="json" style="display:none;"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
